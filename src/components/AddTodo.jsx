@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addTodo } from "../redux/todoSlice";
+import { addTodo } from "./../redux/todoSlice";
 
 const AddTodo = () => {
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+
   const dispatch = useDispatch();
-
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (!text.trim()) {
-      setError("Todo cannot be empty!");
-      return;
-    }
-    dispatch(addTodo({ text }));
+    dispatch(addTodo(text));
     setText("");
-    setError("");
-  };
-
+  }
   return (
     <form className="todo-form" onSubmit={handleSubmit}>
       <input

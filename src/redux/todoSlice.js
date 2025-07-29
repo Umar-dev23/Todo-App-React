@@ -1,54 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit';
-
-// Load initial todos from localStorage
-const loadTodos = () => {
-  const savedTodos = localStorage.getItem('todos');
-  return savedTodos ? JSON.parse(savedTodos) : [];
-};
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = {
-  todos: loadTodos(),
-  filter: 'all', // 'all', 'completed', 'pending'
+  todos: [],
 };
 
-const todoSlice = createSlice({
-  name: 'todos',
+export const todoSlice = createSlice({
+  name: "todo",
   initialState,
   reducers: {
     addTodo: (state, action) => {
-      if (action.payload.text.trim() !== '') {
-        state.todos.push({
-          id: Date.now(),
-          text: action.payload.text,
-          completed: false,
-        });
-        localStorage.setItem('todos', JSON.stringify(state.todos));
-      }
-    },
-    toggleTodo: (state, action) => {
-      const todo = state.todos.find(todo => todo.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
-        localStorage.setItem('todos', JSON.stringify(state.todos));
-      }
-    },
-    editTodo: (state, action) => {
-      const { id, newText } = action.payload;
-      const todo = state.todos.find(todo => todo.id === id);
-      if (todo && newText.trim() !== '') {
-        todo.text = newText;
-        localStorage.setItem('todos', JSON.stringify(state.todos));
-      }
+      const newTodo = {
+        id: nanoid(),
+        text: action.payload,
+      };
+      state.todos.push(newTodo);
     },
     deleteTodo: (state, action) => {
-      state.todos = state.todos.filter(todo => todo.id !== action.payload);
-      localStorage.setItem('todos', JSON.stringify(state.todos));
+      // you forgot the `return` in the filter callback
+      state.todos = state.todos.filter((item) => item.id !== action.payload);
     },
-    setFilter: (state, action) => {
-      state.filter = action.payload;
+    updateTodo: (state, action) => {
+      state.todos = state.todos.map((todo) => {
+        if (todo.id === action.payload.id) {
+        
+          return { ...todo, text: action.payload.text };
+        }
+      
+        return todo;
+      });
     },
   },
 });
 
-export const { addTodo, toggleTodo, editTodo, deleteTodo, setFilter } = todoSlice.actions;
+export const { addTodo, deleteTodo, updateTodo } = todoSlice.actions;
+
 export default todoSlice.reducer;
